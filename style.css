@@ -1,0 +1,266 @@
+@import url('https://fonts.googleapis.com/css2?family=Sigmar+One&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rubik+Bubbles&family=Titan+One&display=swap');
+
+*{
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+.main{
+    display: inline-block;
+    flex-direction: row;
+    align-self: stretch;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background-color: rgb(78, 207, 46);
+}
+
+.footer{
+    width: 100%;
+    height: 100vh;
+    background-color: rgb(78, 207, 46);
+}
+
+.container{
+    display: flex;
+    flex-direction: column;
+    justify-content: first baseline;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    margin: 0 auto;
+}
+
+.game-size{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.select-size, .new-board-btn, .reload-btn{
+    width: 160px;
+    height: 40px;
+    border: 2px solid rgb(224, 167, 9);
+    outline: none;
+    border-radius: 20px;
+    text-align: center;
+    font-size: 20px;
+    background-color: rgb(76, 92, 143);
+    margin-top: 10px;
+    color: rgb(224, 167, 9);
+    cursor: pointer;
+    margin-right: 20px;
+    transition: .3s linear;
+    font-family: 'Sigmar One', cursive;
+    -webkit-box-shadow: 0px 10px 13px -7px #000000, 5px 5px 15px 5px rgba(0,0,0,0); 
+    box-shadow: 0px 10px 13px -7px #000000, 5px 5px 15px 5px rgba(0,0,0,0); 
+}
+
+.select-size:hover, .new-board-btn:hover, .reload-btn:hover{
+    background-color: rgb(5, 23, 92);
+}
+
+.board-field{
+    display: flex;
+    flex-direction: row;
+    /* display: grid;
+    grid-template-columns: repeat(2, 2fr); */
+    align-items: center;
+    justify-content:center;
+    flex-wrap: wrap;
+    width: 1300px;
+}
+
+.board{
+    display: flex;
+    flex-direction: column;
+    vertical-align:bottom;
+    align-items: center;
+    flex-wrap: wrap;
+    position: relative;
+    background-color: rgb(172, 183, 204);
+    border-radius: 10px;
+    -webkit-box-shadow: 0px 10px 13px -7px #000000, 5px 5px 15px 5px rgba(0,0,0,0); 
+    box-shadow: 0px 10px 13px -7px #000000, 5px 5px 15px 5px rgba(0,0,0,0);
+    padding: 30px 30px 0px 30px;
+    margin-top: 10px;
+    margin-right: 30px;
+}
+
+.playfield{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    flex-wrap: wrap;
+    position: absolute;
+    /* margin-top: 10px; */
+    box-sizing: border-box;
+    background-color: rgb(172, 183, 204);
+    /* border-radius: 10px; */
+    /* margin-left: 20px;
+    margin-right: 20px; */
+}
+
+.side-buttons{
+    display: flex;
+    position: absolute;
+    width: 96px; 
+    background-color: rgb(70, 122, 219);
+    border-radius: 10px;
+    z-index: 1;
+}
+
+.freeCell{
+    width: 60px;
+    height: 60px;
+    border: 1px solid #fff;
+    background-color: rgb(172, 183, 204);
+}
+
+.rabbitCell{
+    width: 60px;
+    height: 60px;
+    border: 1px solid #fff;
+    background: url(./img/bunny.png);
+    background-size: contain;
+}
+
+.wolfCell{
+    width: 60px;
+    height: 60px;
+    border: 1px solid #fff;
+    background: url(./img/wolf.png);
+    background-size: contain;
+}
+
+.fenceCell{
+    width: 60px;
+    height: 60px;    
+    border: 1px solid #fff;
+    background: url(./img/fence.png);
+    background-size: contain;
+}
+
+.houseCell{
+    width: 60px;
+    height: 60px;
+    border: 1px solid #fff;
+    background: url(./img/house.png);
+    background-size: contain;
+}
+
+.carrotCell{
+    width: 60px;
+    height: 60px;
+    border: 1px solid #fff;
+    background: url(./img/carrot.png);
+    background-size: contain;
+}
+
+.wolvesWinAnnouncement{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    font-family: 'Press Start 2P', cursive;
+    font-family: 'Rubik Bubbles', cursive;
+    font-family: 'Titan One', cursive;
+    width: 330px;
+    height: 300px;
+    background-color: rgb(177, 214, 91);
+    border-radius: 10px;
+    border: 10px solid rgb(84, 95, 84);
+    position: absolute;
+    margin: 180px auto;
+    font-size: 20px;
+    color: rgb(84, 95, 84);
+    z-index: -1;
+    top: -70px;
+}
+
+.rabbitWinAnnouncement{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    font-family: 'Press Start 2P', cursive;
+    font-family: 'Rubik Bubbles', cursive;
+    font-family: 'Titan One', cursive;
+    width: 330px;
+    height: 300px;
+    background-color: rgb(177, 214, 91);
+    border-radius: 10px;
+    border: 10px solid rgb(62, 189, 79);
+    position: absolute;
+    margin: 180px auto;
+    font-size: 20px;
+    color: green;
+    z-index: -1;
+    top: -70px;
+}
+
+.rabbitWinAnnouncementPoints{
+    color: red;
+    text-align: center;
+}
+
+#move-top{
+    position: absolute;
+    left: 30px;
+    top: 0px;
+    width: 30px;
+    height: 30px;
+    background-color: rgb(50, 103, 146);
+    border: none;
+    margin-left: 3px;
+    bottom: 0px;
+    cursor: pointer;
+    background: url(./img/arrows/arrow-up.png);
+    background-size: contain;
+}
+
+#move-left{
+    position: absolute;
+    left: 0px;
+    top: 33px;
+    width: 30px;
+    height: 30px;
+    background-color: rgb(50, 103, 146);
+    border: none;
+    cursor: pointer;
+    background: url(./img/arrows/arrow-left.png);
+    background-size: contain;
+}
+
+#move-bottom{
+    position: absolute;
+    left: 30px;
+    top: 33px;
+    width: 30px;
+    height: 30px;
+    background-color: rgb(50, 103, 146);
+    border: none;
+    margin-left: 3px;
+    margin-right: 3px;
+    cursor: pointer;
+    background: url(./img/arrows/arrow-down.png);
+    background-size: contain;
+}
+
+#move-right{
+    position: absolute;
+    left: 63px;
+    top: 33px;
+    bottom: 0px;
+    width: 30px;
+    height: 30px;
+    background-color: rgb(50, 103, 146);
+    border: none;
+    cursor: pointer;
+    background: url(./img/arrows/arrow-right.png);
+    background-size: contain;
+}
