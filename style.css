@@ -76,7 +76,6 @@
 .board{
     display: flex;
     flex-direction: column;
-    vertical-align:bottom;
     align-items: center;
     flex-wrap: wrap;
     position: relative;
@@ -110,6 +109,31 @@
     background-color: rgb(70, 122, 219);
     border-radius: 10px;
     z-index: 1;
+}
+
+#rabbitWin{
+    display: block;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: green;
+    z-index: 2;
+    background-color: rgb(138, 182, 138);
+    margin-top: 25%;
+    padding: 60px;
+}
+
+#wolvesWin{
+    display: block;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: rgb(91, 109, 91);
+    z-index: 2;
+    background-color: #333;
+    margin-top: 50%;
+    margin-top: 25%;
+    padding: 60px;
 }
 
 .freeCell{
@@ -151,61 +175,12 @@
     background-size: contain;
 }
 
-.carrotCell{
+.rabbitWinGame{
     width: 60px;
     height: 60px;
     border: 1px solid #fff;
-    background: url(./img/carrot.png);
+    background: url(./img/rabbit.png);
     background-size: contain;
-}
-
-.wolvesWinAnnouncement{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-size: 40px;
-    font-family: 'Press Start 2P', cursive;
-    font-family: 'Rubik Bubbles', cursive;
-    font-family: 'Titan One', cursive;
-    width: 330px;
-    height: 300px;
-    background-color: rgb(177, 214, 91);
-    border-radius: 10px;
-    border: 10px solid rgb(84, 95, 84);
-    position: absolute;
-    margin: 180px auto;
-    font-size: 20px;
-    color: rgb(84, 95, 84);
-    z-index: -1;
-    top: -70px;
-}
-
-.rabbitWinAnnouncement{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-size: 40px;
-    font-family: 'Press Start 2P', cursive;
-    font-family: 'Rubik Bubbles', cursive;
-    font-family: 'Titan One', cursive;
-    width: 330px;
-    height: 300px;
-    background-color: rgb(177, 214, 91);
-    border-radius: 10px;
-    border: 10px solid rgb(62, 189, 79);
-    position: absolute;
-    margin: 180px auto;
-    font-size: 20px;
-    color: green;
-    z-index: -1;
-    top: -70px;
-}
-
-.rabbitWinAnnouncementPoints{
-    color: red;
-    text-align: center;
 }
 
 #move-top{
