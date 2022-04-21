@@ -20,13 +20,13 @@ const characterItems = {
 };
 
 const cellWidth = 60;
-let playfieldSize;
 let serialNumber = 0;
-let rabbitWin;
 
 newBoardBtn.addEventListener("click", function () {
+  const getPlayfieldSize = () => parseInt(document.getElementById("select-size").value);
+  const playfieldSize = getPlayfieldSize();
   const currentMatrix = createCurrentMatrix(playfieldSize);
-  const currentBoard = makeBoard();
+  const currentBoard = makeBoard(playfieldSize);
   const playfield = makePlayfield(currentMatrix, currentBoard, playfieldSize);
   makeGame(currentMatrix, currentBoard, playfieldSize);
 });
@@ -45,9 +45,9 @@ const makeCharacterStorage = (count, characterStorageField) => {
   return characterStorageField;
 }
 
-const createCurrentMatrix = () => {
-  playfieldSize = parseInt(document.getElementById("select-size").value);
-  const numberOfCharacters = (playfieldSize * 40) / 100;
+const createCurrentMatrix = (size) => {
+  
+  const numberOfCharacters = (size * 40) / 100;
   const characterStorage = new Array(0);
 
   const createInitialMatrix = (size) => {
@@ -57,7 +57,7 @@ const createCurrentMatrix = () => {
     return emptyMatrix;
   }
 
-  const initialMatrix = createInitialMatrix(playfieldSize);
+  const initialMatrix = createInitialMatrix(size);
 
   const storage = makeCharacterStorage(numberOfCharacters, characterStorage);
 
@@ -71,16 +71,16 @@ const createCurrentMatrix = () => {
     }
   }
 
-  function setCharacters() {
+  function setCharacters(size) {
     const characterStorageLength = characterStorage.length;
     let k = 0;
     do {
-      setRandomPositionForCharacter(initialMatrix, playfieldSize);
+      setRandomPositionForCharacter(initialMatrix, size);
       k++;
     } while (k < characterStorageLength);
   }
 
-  setCharacters();
+  setCharacters(size);
 
   return initialMatrix; 
 }
@@ -92,16 +92,17 @@ const makeGameFields = (fieldName, fieldClassName, fieldsIdName) => {
 }
 
 const makeBoard = (size) => {
+  let rabbitWin;
   serialNumber++;
   const board = document.createElement('div');
   makeGameFields(board, 'board', `board${serialNumber}`);
-  board.style.width = `${(playfieldSize + 1) * cellWidth}px`;
-  board.style.height = `${((playfieldSize  + 1) * cellWidth) + (cellWidth / 2)}px`;
+  board.style.width = `${(size + 1) * cellWidth}px`;
+  board.style.height = `${((size  + 1) * cellWidth) + (cellWidth / 2)}px`;
   boardField.appendChild(board);
   const moveButtonsDiv = document.createElement('div');
   makeGameFields(moveButtonsDiv, 'side-buttons', `side-buttons${serialNumber}`)
   moveButtonsDiv.style.height = `${cellWidth}px`;
-  moveButtonsDiv.style.top = `${playfieldSize * cellWidth + (cellWidth / 2)}px`;
+  moveButtonsDiv.style.top = `${size * cellWidth + (cellWidth / 2)}px`;
   moveButtonsDiv.innerHTML = `
     <button id='move-right'></button>
     <button id='move-bottom'></button>
