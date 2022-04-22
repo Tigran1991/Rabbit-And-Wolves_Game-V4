@@ -20,16 +20,12 @@ const characterItems = {
 };
 
 const cellWidth = 60;
-let serialNumber = 0;
 let rabbitWin;
 
 newBoardBtn.addEventListener("click", function () {
   const getPlayfieldSize = () => parseInt(document.getElementById("select-size").value);
   const playfieldSize = getPlayfieldSize();
-  const currentMatrix = createCurrentMatrix(playfieldSize);
-  const currentBoard = makeBoard(playfieldSize);
-  const playfield = makePlayfield(currentMatrix, currentBoard, playfieldSize);
-  makeGame(currentMatrix, currentBoard, playfieldSize);
+  makeGame(playfieldSize);
 });
 
 reloadBtn.addEventListener('click', function (){
@@ -92,16 +88,14 @@ const makeGameFields = (fieldName, fieldClassName, fieldsIdName) => {
   return fieldName;
 }
 
-const makeBoard = (size) => {
-  serialNumber++;
+const makeBoard = (size, fieldsIdName) => {
   const board = document.createElement('div');
-  makeGameFields(board, 'board', `board${serialNumber}`);
+  makeGameFields(board, 'board', `board${fieldsIdName}`);
   board.style.width = `${(size + 1) * cellWidth}px`;
   board.style.height = `${((size  + 1) * cellWidth) + (cellWidth / 2)}px`;
   boardField.appendChild(board);
   const moveButtonsDiv = document.createElement('div');
-  makeGameFields(moveButtonsDiv, 'side-buttons', `side-buttons${serialNumber}`)
-  moveButtonsDiv.style.height = `${cellWidth}px`;
+  makeGameFields(moveButtonsDiv, 'side-buttons', `side-buttons${fieldsIdName}`)
   moveButtonsDiv.style.top = `${size * cellWidth + (cellWidth / 2)}px`;
   moveButtonsDiv.innerHTML = `
     <button id='move-right'></button>
@@ -112,9 +106,9 @@ const makeBoard = (size) => {
   return board;
 }
 
-const makePlayfield = (matrix, board, size) => {
+const makePlayfield = (size, matrix, board) =>{
   let playfield = document.createElement('div');
-  makeGameFields(playfield, 'playfield', `playfield${serialNumber}`)
+  playfield.setAttribute('class', 'playfield');
   playfield.style.width = `${size * cellWidth}px`;
   playfield.style.height = `${size * cellWidth}px`;
   board.appendChild(playfield);
@@ -152,87 +146,93 @@ const characterCurrentCoordinate = (matrix, character) => {
   return characterCoordinateStorage;
 }
 
-const makeGame = (matrix, board, playfieldSize) => {
+const makeGame = (size) => {
+
+  const generateCurrentIdNumber = () => Math.floor(Math.random() * 100000);
+  const currentIdNumber = generateCurrentIdNumber();
+  const currentMatrix = createCurrentMatrix(size);
+  const currentBoard = makeBoard(size, currentIdNumber);
+  const currentPlayfield = makePlayfield(size, currentMatrix, currentBoard);
 
   const rabbitMove = (e) => {
     let rabbitMoveDirection = e.target.id;
-    characterCurrentCoordinate(matrix, characters.rabbitCell);
+    characterCurrentCoordinate(currentMatrix, characters.rabbitCell);
     switch(rabbitMoveDirection){
     case 'move-right':
-      rabbitMoveRight();
+      rabbitMoveRight(size);
       break;
     case 'move-bottom':
-      rabbitMoveBottom();
+      rabbitMoveBottom(size);
       break;
     case 'move-left':
-      rabbitMoveLeft();
+      rabbitMoveLeft(size);
       break;
     case 'move-top':
-      rabbitMoveTop();
+      rabbitMoveTop(size);
       break;
     }
-    if(rabbitCanMove(rabbitNewPositionX, rabbitNewPositionY, board)){
+    if(rabbitCanMove(rabbitNewPositionX, rabbitNewPositionY, currentBoard)){
       moveCharacter(characters.rabbitCell, rabbitNewPositionX, rabbitNewPositionY);
     }
-    updateWolvesPositions(matrix, board);
-    makePlayfield(matrix, board, playfieldSize);
+    updateWolvesPositions(currentMatrix, currentBoard);
+    makePlayfield(size, currentMatrix, currentBoard);
   }
 
-  document.getElementById(`side-buttons${serialNumber}`).addEventListener('click', rabbitMove);
-
-  const rabbitMoveRight = () =>{
-    if(posY === (playfieldSize - 1)){
+  document.getElementById(`side-buttons${currentIdNumber}`).addEventListener('click', rabbitMove);
+  
+  const rabbitMoveRight = (size) =>{
+    if(posY === (size - 1)){
       return rabbitNewPositionX = posX, rabbitNewPositionY = 0;
     }else{
       return rabbitNewPositionX = posX, rabbitNewPositionY = (posY + 1);
     }
   }
   
-  const rabbitMoveBottom = () =>{
-    if(posX === (playfieldSize - 1)){
+  const rabbitMoveBottom = (size) =>{
+    if(posX === (size - 1)){
       return rabbitNewPositionX = 0, rabbitNewPositionY = posY;
     }else{
       return rabbitNewPositionX = (posX + 1), rabbitNewPositionY = posY;
     }
   }
   
-  const rabbitMoveLeft = () =>{
+  const rabbitMoveLeft = (size) =>{
     if(posY === 0){
-      return rabbitNewPositionX = posX, rabbitNewPositionY = (playfieldSize - 1);
+      return rabbitNewPositionX = posX, rabbitNewPositionY = (size - 1);
     }else{
       return rabbitNewPositionX = posX, rabbitNewPositionY = (posY - 1);
     }
   }
   
-  const rabbitMoveTop = () =>{
+  const rabbitMoveTop = (size) =>{
     if(posX === 0){
-      return rabbitNewPositionX = (playfieldSize - 1), rabbitNewPositionY = posY;
+      return rabbitNewPositionX = (size - 1), rabbitNewPositionY = posY;
     }else{
       return rabbitNewPositionX = (posX - 1), rabbitNewPositionY = posY;
     }
   }
 
   function rabbitCanMove(characterPositionX, characterPositionY, board){
-    let rabbitNextPosition = matrix[characterPositionX][characterPositionY];
+    let rabbitNextPosition = currentMatrix[characterPositionX][characterPositionY];
     if(rabbitNextPosition == characters.fenceCell){
       return false;
     }
     if(rabbitNextPosition == characters.wolfCell){
-      board.innerHTML = `<h1 id='wolvesWin'>Wolves Win !</h1>`;
+      currentBoard.innerHTML = `<h1 id='wolvesWin'>Wolves Win !</h1>`;
     }
     if(rabbitNextPosition == characters.houseCell){
-      board.innerHTML = `<h1 id='rabbitWin'>Rabbit Win !</h1>`;
+      currentBoard.innerHTML = `<h1 id='rabbitWin'>Rabbit Win !</h1>`;
       return rabbitWin = true;
     }
     return true;
   }
 
   function moveCharacter(character, characterPositionX, characterPositionY){
-    matrix[posX].splice(posY, 1, characters.freeCell);
-    matrix[characterPositionX].splice(characterPositionY, 1, character);
+    currentMatrix[posX].splice(posY, 1, characters.freeCell);
+    currentMatrix[characterPositionX].splice(characterPositionY, 1, character);
   }
 
-  function updateWolvesPositions(matrix, board) {
+  function updateWolvesPositions(matrix) {
     const wolvesCharacterCoordinateStorage = characterCurrentCoordinate(matrix, characters.wolfCell);
     while(wolvesCharacterCoordinateStorage.length !== 0){
       for(let m = 0; m < wolvesCharacterCoordinateStorage.length; m++){
@@ -240,7 +240,7 @@ const makeGame = (matrix, board, playfieldSize) => {
         posY = wolvesCharacterCoordinateStorage[0][1];
         wolvesCharacterCoordinateStorage.shift();
           determineClosestDistance(posX, posY);
-          if(wolfCanMove(wolfNewPositionX, wolfNewPositionY, board)){
+          if(wolfCanMove(wolfNewPositionX, wolfNewPositionY)){
             moveCharacter(characters.wolfCell, wolfNewPositionX, wolfNewPositionY);
           } 
       }
@@ -296,7 +296,7 @@ const makeGame = (matrix, board, playfieldSize) => {
   }
 
   function wolfCanMove(characterPositionX, characterPositionY, board){
-    let wolfNextPosition = matrix[characterPositionX][characterPositionY];
+    let wolfNextPosition = currentMatrix[characterPositionX][characterPositionY];
     if(wolfNextPosition == characters.fenceCell
       || wolfNextPosition == characters.wolfCell
       || wolfNextPosition == characters.houseCell
@@ -308,7 +308,7 @@ const makeGame = (matrix, board, playfieldSize) => {
       return false;
     }
     if(wolfNextPosition == characters.rabbitCell){
-      board.innerHTML = `<h1 id='wolvesWin'>Wolves Win !</h1>`;
+      currentBoard.innerHTML = `<h1 id='wolvesWin'>Wolves Win !</h1>`;
     }
     return true;
   }
