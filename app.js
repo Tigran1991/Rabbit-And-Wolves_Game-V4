@@ -21,6 +21,7 @@ const characterItems = {
 
 const cellWidth = 60;
 let serialNumber = 0;
+let rabbitWin;
 
 newBoardBtn.addEventListener("click", function () {
   const getPlayfieldSize = () => parseInt(document.getElementById("select-size").value);
@@ -92,7 +93,6 @@ const makeGameFields = (fieldName, fieldClassName, fieldsIdName) => {
 }
 
 const makeBoard = (size) => {
-  let rabbitWin;
   serialNumber++;
   const board = document.createElement('div');
   makeGameFields(board, 'board', `board${serialNumber}`);
