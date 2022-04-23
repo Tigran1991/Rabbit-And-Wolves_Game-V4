@@ -154,62 +154,45 @@ const makeGame = (size) => {
   const currentBoard = makeBoard(size, currentIdNumber);
   const currentPlayfield = makePlayfield(size, currentMatrix, currentBoard);
 
+  const rabbitMoveOnPlayfield = (size, rabbitMoveDirection) => {
+    moveDirection[rabbitMoveDirection];
+    currentRabbitMove(size, rabbitMoveDirection);
+  }
+
   const rabbitMove = (e) => {
     let rabbitMoveDirection = e.target.id;
     characterCurrentCoordinate(currentMatrix, characters.rabbitCell);
-    switch(rabbitMoveDirection){
-    case 'move-right':
-      rabbitMoveRight(size);
-      break;
-    case 'move-bottom':
-      rabbitMoveBottom(size);
-      break;
-    case 'move-left':
-      rabbitMoveLeft(size);
-      break;
-    case 'move-top':
-      rabbitMoveTop(size);
-      break;
-    }
-    if(rabbitCanMove(rabbitNewPositionX, rabbitNewPositionY, currentBoard)){
-      moveCharacter(characters.rabbitCell, rabbitNewPositionX, rabbitNewPositionY);
-    }
+    rabbitMoveOnPlayfield(size, rabbitMoveDirection);
+      if(rabbitCanMove(rabbitNewPositionX, rabbitNewPositionY, currentBoard)){
+        moveCharacter(characters.rabbitCell, rabbitNewPositionX, rabbitNewPositionY);
+      }
     updateWolvesPositions(currentMatrix, currentBoard);
     makePlayfield(size, currentMatrix, currentBoard);
   }
 
   document.getElementById(`side-buttons${currentIdNumber}`).addEventListener('click', rabbitMove);
   
-  const rabbitMoveRight = (size) =>{
-    if(posY === (size - 1)){
-      return rabbitNewPositionX = posX, rabbitNewPositionY = 0;
-    }else{
-      return rabbitNewPositionX = posX, rabbitNewPositionY = (posY + 1);
-    }
+  const moveDirection = {
+    'move-right': [0, 1],
+    'move-bottom': [1, 0],
+    'move-left': [0, -1],
+    'move-top': [-1, 0],
   }
-  
-  const rabbitMoveBottom = (size) =>{
-    if(posX === (size - 1)){
-      return rabbitNewPositionX = 0, rabbitNewPositionY = posY;
-    }else{
-      return rabbitNewPositionX = (posX + 1), rabbitNewPositionY = posY;
-    }
-  }
-  
-  const rabbitMoveLeft = (size) =>{
-    if(posY === 0){
-      return rabbitNewPositionX = posX, rabbitNewPositionY = (size - 1);
-    }else{
-      return rabbitNewPositionX = posX, rabbitNewPositionY = (posY - 1);
-    }
-  }
-  
-  const rabbitMoveTop = (size) =>{
-    if(posX === 0){
+ 
+  const currentRabbitMove = (size, direction) => {
+    if(posX === 0 && direction == 'move-top'){
       return rabbitNewPositionX = (size - 1), rabbitNewPositionY = posY;
-    }else{
-      return rabbitNewPositionX = (posX - 1), rabbitNewPositionY = posY;
     }
+    if(posY === 0 && direction == 'move-left'){
+      return rabbitNewPositionX = posX, rabbitNewPositionY = (size - 1);
+    }
+    if(posX === (size - 1) && direction == 'move-bottom'){
+      return rabbitNewPositionX = 0, rabbitNewPositionY = posY;
+    }
+    if(posY === (size - 1) && direction == 'move-right'){
+      return rabbitNewPositionX = posX, rabbitNewPositionY = 0;
+    }
+    return rabbitNewPositionX = posX + moveDirection[direction][0], rabbitNewPositionY = posY + moveDirection[direction][1];
   }
 
   function rabbitCanMove(characterPositionX, characterPositionY, board){
