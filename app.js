@@ -19,13 +19,14 @@ const characterItems = {
   4: "fenceCell",
 };
 
-  
 const moveDirection = {
   'move-right': [0, 1],
   'move-bottom': [1, 0],
   'move-left': [0, -1],
   'move-top': [-1, 0],
 }
+
+const moveDirectionValues = Object.values(moveDirection);
  
 const cellWidth = 60;
 
@@ -139,17 +140,15 @@ const makePlayfield = (size, matrix, board) =>{
 
 const characterCurrentCoordinate = (matrix, character) => {
   let characterCoordinateStorage = new Array(0);
-  for (let i = 0; i < matrix.length; i++) {
-    if (matrix[i].includes(character)) {  
-      for(let j = 0; j < matrix[i].length; j++){
-        if(matrix[i][j] === character){
-          posX = i;
-          posY = j;
-          characterCoordinateStorage.push([posX, posY]);
-        }
+  matrix.forEach(arr => {
+    for(let i = 0; i < arr.length; i++){
+      if(arr[i] == character){
+        posX = matrix.indexOf(arr);
+        posY = i;
+        characterCoordinateStorage.push([posX, posY]);
       }
-    }   
-  }
+    }
+  })
   return characterCoordinateStorage;
 }
 
@@ -162,7 +161,6 @@ const makeGame = (size) => {
   const currentPlayfield = makePlayfield(size, currentMatrix, currentBoard);
 
   const rabbitMoveOnPlayfield = (size, rabbitMoveDirection) => {
-    moveDirection[rabbitMoveDirection];
     currentRabbitMove(size, rabbitMoveDirection);
   }
 
@@ -180,6 +178,7 @@ const makeGame = (size) => {
   document.getElementById(`side-buttons${currentIdNumber}`).addEventListener('click', rabbitMove);
 
   const currentRabbitMove = (size, direction) => {
+    let [moveOnX, moveOnY] = moveDirection[direction];
     if(posX === 0 && direction == 'move-top'){
       return rabbitNewPositionX = (size - 1), rabbitNewPositionY = posY;
     }
@@ -192,8 +191,8 @@ const makeGame = (size) => {
     if(posY === (size - 1) && direction == 'move-right'){
       return rabbitNewPositionX = posX, rabbitNewPositionY = 0;
     }
-    return rabbitNewPositionX = posX + moveDirection[direction][0], 
-           rabbitNewPositionY = posY + moveDirection[direction][1];
+    return rabbitNewPositionX = posX + moveOnX, 
+           rabbitNewPositionY = posY + moveOnY;
   }
 
   function rabbitCanMove(characterPositionX, characterPositionY){
@@ -217,43 +216,26 @@ const makeGame = (size) => {
   }
 
   function updateWolvesPositions(matrix, winnerCharacter) {
-    const wolvesCharacterCoordinateStorage = characterCurrentCoordinate(matrix, characters.wolfCell);
-    while(wolvesCharacterCoordinateStorage.length !== 0){
-      for(let m = 0; m < wolvesCharacterCoordinateStorage.length; m++){
-        posX = wolvesCharacterCoordinateStorage[0][0];
-        posY = wolvesCharacterCoordinateStorage[0][1];
-        wolvesCharacterCoordinateStorage.shift();
-          determineClosestDistance(posX, posY);
-          if(wolfCanMove(wolfNewPositionX, wolfNewPositionY, winnerCharacter)){
-            moveCharacter(characters.wolfCell, wolfNewPositionX, wolfNewPositionY);
-          } 
+    let [...currentWolvesPositions] = characterCurrentCoordinate(matrix, characters.wolfCell);
+    let i = 0;
+    while(i < currentWolvesPositions.length){
+    [posX, posY] = currentWolvesPositions[i];
+      determineClosestDistance(posX, posY);
+      if(wolfCanMove(wolfNewPositionX, wolfNewPositionY, winnerCharacter)){
+        moveCharacter(characters.wolfCell, wolfNewPositionX, wolfNewPositionY);
       }
+      i++;
     }
   }
   
-  function determineClosestDistance(posX, posY){
+  const determineClosestDistance = (posX, posY) => {
   let closestDistanceStorage = new Array(0);
-  if(wolfProbablePositionY = posY + 1){
-    distanceByX = Math.abs(posX - rabbitNewPositionX);
-    distanceByY = Math.abs(wolfProbablePositionY - rabbitNewPositionY);
-    calculateDistance(closestDistanceStorage);
-  }
-  if(wolfProbablePositionX = posX + 1){
-    distanceByX = Math.abs(wolfProbablePositionX - rabbitNewPositionX);
-    distanceByY = Math.abs(posY - rabbitNewPositionY);
-    calculateDistance(closestDistanceStorage);
-  }
-  if(wolfProbablePositionY = posY - 1){
-    distanceByX = Math.abs(posX - rabbitNewPositionX);
-    distanceByY = Math.abs(wolfProbablePositionY - rabbitNewPositionY);
-    calculateDistance(closestDistanceStorage);
-  }
-  if(wolfProbablePositionX = posX - 1){
-    distanceByX = Math.abs(wolfProbablePositionX - rabbitNewPositionX);
-    distanceByY = Math.abs(posY - rabbitNewPositionY);
-    calculateDistance(closestDistanceStorage);
-  }
-  setWolfNewPositionCoordinates(closestDistanceStorage);
+    for(let i = 0; i < moveDirectionValues.length; i++){
+      distanceByX = Math.abs((posX + moveDirectionValues[i][0]) - rabbitNewPositionX);
+      distanceByY = Math.abs((posY + moveDirectionValues[i][1]) - rabbitNewPositionY);
+      calculateDistance(closestDistanceStorage);
+    }
+  setWolfNewPositionCoordinates(posX, posY, closestDistanceStorage);
   }
   
   function calculateDistance(distanceStorage){
@@ -261,20 +243,13 @@ const makeGame = (size) => {
     return distanceStorage.push(distance);
   }
   
-  function setWolfNewPositionCoordinates(storage){
+  function setWolfNewPositionCoordinates(posX, posY, storage){
     if(storage.length !== 0){
       let minDistance = Math.min(...storage);
-      if(minDistance === storage[0]){
-        wolfNewPositionX = posX, wolfNewPositionY = posY + 1;
-      }
-      if(minDistance === storage[1]){
-        wolfNewPositionX = posX + 1, wolfNewPositionY = posY;
-      }
-      if(minDistance === storage[2]){
-        wolfNewPositionX = posX, wolfNewPositionY = posY - 1;
-      }
-      if(minDistance === storage[3]){
-        wolfNewPositionX = posX - 1, wolfNewPositionY = posY;
+      for(let j = 0; j < storage.length; j++){
+        if(minDistance === storage[j]){
+          wolfNewPositionX = posX + moveDirectionValues[j][0], wolfNewPositionY = posY + moveDirectionValues[j][1];
+        }
       }
     }
   }
