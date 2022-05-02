@@ -136,11 +136,10 @@
     font-size: 40px;
     font-weight: 900;
     color: green;
-    z-index: 2;
     background-color: rgb(138, 182, 138);
+    z-index: 2;
     margin-top: 20%;
     padding: 60px;
-    opacity: 2;
 }
 
 #wolvesWin{
@@ -151,8 +150,8 @@
     font-size: 40px;
     font-weight: 900;
     color: rgb(91, 109, 91);
-    z-index: 2;
     background-color: #333;
+    z-index: 2;
     margin-top: 50%;
     margin-top: 25%;
     padding: 60px;
@@ -197,7 +196,7 @@
     background-size: contain;
 }
 
-#move-top{
+.move-top{
     position: absolute;
     left: 30px;
     top: 0px;
@@ -212,7 +211,7 @@
     background-size: contain;
 }
 
-#move-left{
+.move-left{
     position: absolute;
     left: 0px;
     top: 33px;
@@ -225,7 +224,7 @@
     background-size: contain;
 }
 
-#move-bottom{
+.move-bottom{
     position: absolute;
     left: 30px;
     top: 33px;
@@ -240,7 +239,7 @@
     background-size: contain;
 }
 
-#move-right{
+.move-right{
     position: absolute;
     left: 63px;
     top: 33px;
