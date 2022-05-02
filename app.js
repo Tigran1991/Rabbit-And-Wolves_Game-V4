@@ -256,6 +256,10 @@ const makeGame = (mainField) => {
   const charactersMovement = (event) => { // making characters move 
     const RABBIT_NEW_POSITION = updateRabbitPosition(event, CURRENT_MATRIX);
     moveCharacter(RABBIT_CELL, RABBIT_NEW_POSITION);
+    if(isWolvesWin()){ 
+      document.getElementById(`playfield${CURRENT_ID}`).remove();
+      return CURRENT_BOARD.innerHTML = `<div id="wolvesWin"> Wolves Win !</div>`;
+    }
     updateWolvesPositions(RABBIT_NEW_POSITION);
     if(isWolvesWin()){ 
       document.getElementById(`playfield${CURRENT_ID}`).remove();
