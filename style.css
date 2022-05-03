@@ -164,35 +164,10 @@
     background-color: rgb(172, 183, 204);
 }
 
-.rabbitCell{
+img{
     width: 60px;
     height: 60px;
     border: 1px solid #fff;
-    background: url(./img/bunny.png);
-    background-size: contain;
-}
-
-.wolfCell{
-    width: 60px;
-    height: 60px;
-    border: 1px solid #fff;
-    background: url(./img/wolf.png);
-    background-size: contain;
-}
-
-.fenceCell{
-    width: 60px;
-    height: 60px;    
-    border: 1px solid #fff;
-    background: url(./img/fence.png);
-    background-size: contain;
-}
-
-.houseCell{
-    width: 60px;
-    height: 60px;
-    border: 1px solid #fff;
-    background: url(./img/house.png);
     background-size: contain;
 }
 

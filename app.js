@@ -17,45 +17,90 @@ const CELL_WIDTH = 60;
 
 const DIRECTION_MOVEMENT = Object.values(MOVE_DIRECTION);
 
+const createInitialMatrix = (size) => {
+  const MATRIX = new Array(size)
+    .fill(0)
+    .map(() => new Array(size).fill(0));
+  return MATRIX;
+}
+
+const generateCurrentId = () => Math.floor(Math.random() * 100000);
+
+const makeGameFields = (fieldsName, fieldsClassName, fieldsIdName) => { 
+  fieldsName.setAttribute('class', fieldsClassName);
+  fieldsName.setAttribute('id', fieldsIdName);
+  return fieldsName;
+}
+
+const makeButtonsDivElements = (buttonsDiv, id) => {
+  buttonsDiv.innerHTML = `
+    <button class='move-right' id='move-right-${id}'></button>
+    <button class='move-bottom' id='move-bottom-${id}'></button>
+    <button class='move-left' id='move-left-${id}'></button>
+    <button class='move-top' id='move-top-${id}'></button> `;
+  return buttonsDiv; 
+}
+
+const setBoardStyles = (currentBoard, size) => {
+  currentBoard.style.width = `${( size + 1) * CELL_WIDTH}px`;
+  currentBoard.style.height = `${(( size  + 1) * CELL_WIDTH) + (CELL_WIDTH / 2)}px`;
+}
+
+const setButtonsDivStyles = (currentButtonsDiv, size) => {
+  currentButtonsDiv.style.top = `${ size * CELL_WIDTH + (CELL_WIDTH / 2)}px`;
+}
+
+const setPlayfieldStyles = (currentPlayfield, size) => {
+  currentPlayfield.style.width = `${size * CELL_WIDTH}px`;;
+}
+
+const drawMatrix = (matrix, obj, playfield) => {
+  matrix.forEach((arr) => { 
+    arr.forEach((arrayItem) => {
+      const CELL = document.createElement('div');
+      CELL.setAttribute('class', 'freeCell');
+      const ITEM = document.createElement('img');
+        if(arrayItem !== FREE_CELL){
+          ITEM.src = obj[arrayItem].url;
+          playfield.appendChild(ITEM);
+        }else{
+          playfield.appendChild(CELL);
+        }
+    })
+  })  
+}
+
+const multiply = (a, b) => a + b;
+
 const makeGame = (mainField) => {
 
-  const getPLAYFIELD_SIZE = () => parseInt(document.getElementById('select-size').value);
-  const PLAYFIELD_SIZE = getPLAYFIELD_SIZE();
+  const getPlayfieldSize = () => parseInt(document.getElementById('select-size').value);
+  const PLAYFIELD_SIZE = getPlayfieldSize();
 
   const CHARACTERS = {
-    'freeCell': 0,
-    'rabbitCell': {
-      code: 1,
+    [RABBIT_CELL]: {
       characterCount : 1,
       canMove: [FREE_CELL, WOLF_CELL, HOUSE_CELL],
+      url: './img/bunny.png'
     },
-    'wolfCell': {
-      code: 2,
+    [WOLF_CELL]: {
       characterCount : (PLAYFIELD_SIZE * 40) / 100,
       canMove: [FREE_CELL, RABBIT_CELL],
+      url: './img/wolf.png'
     },
-    'houseCell': {
-      code: 3,
+    [HOUSE_CELL]: {
       characterCount : 1,
+      url: './img/house.png'
     },
-    'fenceCell': {
-      code: 4,
+    [FENCE_CELL]: {
       characterCount : (PLAYFIELD_SIZE * 40) / 100,
+      url: './img/fence.png'
     },
   };
 
-  const CHARACTERS_NAMES = Object.keys(CHARACTERS);
-
   //1. Creating matrix
 
-  const createInitialMatrix = (size) => {  // Create Initial Matrix,that iclude only 0 items
-    const MATRIX = new Array(size)
-      .fill(0)
-      .map(() => new Array(size).fill(0));
-    return MATRIX;
-  }
-  
-  const getRandomPositionsForCharacter = (matrix) => {      // function that generate random coordinates for characters
+  const getRandomPositionsForCharacter = (matrix) => {
     const x = Math.floor(Math.random() * PLAYFIELD_SIZE);
     const y = Math.floor(Math.random() * PLAYFIELD_SIZE);
     if (matrix[x][y] == FREE_CELL) {
@@ -65,202 +110,178 @@ const makeGame = (mainField) => {
     }
   }
   
-  const setCharacterOnPlayfield = (matrix) => {             // function that set characters on playfield 
+  const setCharacterOnPlayfield = (matrix) => {
     for(let character in CHARACTERS){
       for(let i = 0; i < CHARACTERS[character].characterCount; i++){
         [m, n] = getRandomPositionsForCharacter(matrix);
-        matrix[m][n] = CHARACTERS[character].code;
+        matrix[m][n] = Number(character);
       }
     }
     return matrix;
   }
   
-  const initialMatrix = createInitialMatrix(PLAYFIELD_SIZE);
-  const CURRENT_MATRIX = setCharacterOnPlayfield(initialMatrix);
+  const INITIAL_MATRIX = createInitialMatrix(PLAYFIELD_SIZE);
+  const CURRENT_MATRIX = setCharacterOnPlayfield(INITIAL_MATRIX);
+  console.log(CURRENT_MATRIX)
 
   //2.Making BOARD for PLAYFIELD and BUTTONS field for every side button
-
-  const generateCurrentId = () => Math.floor(Math.random() * 100000);   
-  const CURRENT_ID = generateCurrentId(); // generate random Id for every field
-
-  const makeGameFields = (fieldsName, fieldsClassName, fieldsIdName) => { // pure function that make fields
-    fieldsName.setAttribute('class', fieldsClassName);
-    fieldsName.setAttribute('id', fieldsIdName);
-    return fieldsName;
-  }
+   
+  const CURRENT_ID = generateCurrentId();
   
   const makeBoard = (fieldsIdName, mainField) => {
     const BOARD = document.createElement('div');
     makeGameFields(BOARD, 'board', `board${fieldsIdName}`);
-    BOARD.style.width = `${(PLAYFIELD_SIZE + 1) * CELL_WIDTH}px`; // width for board
-    BOARD.style.height = `${((PLAYFIELD_SIZE  + 1) * CELL_WIDTH) + (CELL_WIDTH / 2)}px`; // height for board
-    mainField.appendChild(BOARD); // appending board in main board-field
-
-    const MOVEMENT_BUTTONS = document.createElement('div'); // creating buttons div
-    makeGameFields(MOVEMENT_BUTTONS, 'side-buttons', `side-buttons${fieldsIdName}`);
-    MOVEMENT_BUTTONS.style.top = `${PLAYFIELD_SIZE * CELL_WIDTH + (CELL_WIDTH / 2)}px`;
-    MOVEMENT_BUTTONS.innerHTML = `
-      <button class='move-right' id='move-right-${CURRENT_ID}'></button>
-      <button class='move-bottom' id='move-bottom-${CURRENT_ID}'></button>
-      <button class='move-left' id='move-left-${CURRENT_ID}'></button>
-      <button class='move-top' id='move-top-${CURRENT_ID}'></button> `;
-    BOARD.appendChild(MOVEMENT_BUTTONS);  // appending buttons div in board
-
+    mainField.appendChild(BOARD);
     return BOARD;
   }
-  
-  const makePlayfield = (fieldsIdName) =>{
-    if(document.getElementById(`playfield${fieldsIdName}`) !== null){ // playfield inspection
-      document.getElementById(`playfield${fieldsIdName}`).remove(); //  if playfield is availible delete it
+
+  const makeButtonsDiv = (currentBoard, fieldsIdName) => {
+    const MOVEMENT_BUTTONS = document.createElement('div'); 
+    makeGameFields(MOVEMENT_BUTTONS, 'side-buttons', `side-buttons${fieldsIdName}`);
+    makeButtonsDivElements(MOVEMENT_BUTTONS, CURRENT_ID);
+    currentBoard.appendChild(MOVEMENT_BUTTONS);
+    return MOVEMENT_BUTTONS; 
+  }
+
+  const removeDocumentsElement = (fieldsIdName) => {
+    if(document.getElementById(`playfield${fieldsIdName}`) !== null){
+      document.getElementById(`playfield${fieldsIdName}`).remove();
     }
+  }
+
+  const makePlayfield = (fieldsIdName) =>{
+    removeDocumentsElement(fieldsIdName);
     const PLAYFIELD = document.createElement('div');  
     makeGameFields(PLAYFIELD, 'playfield', `playfield${fieldsIdName}`);
-    PLAYFIELD.style.width = `${PLAYFIELD_SIZE * CELL_WIDTH}px`; // width for playfield
-    CURRENT_BOARD.appendChild(PLAYFIELD); // appending playfield in board
-
-    const createItem = (itemName, className) => { 
-      itemName = document.createElement('div'); // creating div for every character
-      itemName.classList.add(className);
-      PLAYFIELD.appendChild(itemName);
-    }
-    
-    const addCharacters = (arrayItem) => { 
-      createItem(CHARACTERS_NAMES[arrayItem], CHARACTERS_NAMES[arrayItem]);
-    }
-  
-    CURRENT_MATRIX.forEach((arr) => { // adding every character from matrix in playfield
-      arr.forEach((arrayItem) => {
-        addCharacters(arrayItem);
-      });
-    });
+    drawMatrix(CURRENT_MATRIX, CHARACTERS, PLAYFIELD);
+    CURRENT_BOARD.appendChild(PLAYFIELD);
+    return PLAYFIELD;
   }
-  
+
   const CURRENT_BOARD = makeBoard(CURRENT_ID, mainField);
+  const CURRENT_BUTTONS_DIV = makeButtonsDiv(CURRENT_BOARD, CURRENT_ID);
   const CURRENT_PLAYFIELD = makePlayfield(CURRENT_ID);
 
-  const getCharactersCurrentPosition = (character) => { // function that return array of characters current position
-    const POSITION_STORAGE = new Array(0);              // that we pas like argument
+  setBoardStyles(CURRENT_BOARD, PLAYFIELD_SIZE);
+  setButtonsDivStyles(CURRENT_BUTTONS_DIV, PLAYFIELD_SIZE);
+  setPlayfieldStyles(CURRENT_PLAYFIELD, PLAYFIELD_SIZE);
+
+  const getCharactersCurrentPosition = (character) => { 
+    const POSITION_STORAGE = new Array(0);             
     CURRENT_MATRIX.forEach(arr => {
       for(let i = 0; i < arr.length; i++){
         if(arr[i] == character){
-          posX = CURRENT_MATRIX.indexOf(arr);
-          posY = i;
-          POSITION_STORAGE.push([posX, posY]);
+          const posX = CURRENT_MATRIX.indexOf(arr);
+          const posY = i;
+          const WOLF_POSITION = Array.of(posX, posY);
+          POSITION_STORAGE.push(WOLF_POSITION);
         }
       }
     })
     return POSITION_STORAGE;
   }
 
-  const moveCharacter = (character, characterPosition) => {  // function that getting old և new positions of character
-    if(characterPosition){                                   //  and makes change on matrix
-      CURRENT_MATRIX[posX].splice(posY, 1, FREE_CELL);
-      CURRENT_MATRIX[characterPosition.newPosition[X]].splice(characterPosition.newPosition[Y], 1, character);
+  const moveCharacter = (character, characterPosition) => {
+    if(characterPosition){                                   
+      CURRENT_MATRIX[characterPosition.CURRENT_POSITION[X]].splice(characterPosition.CURRENT_POSITION[Y], 1, FREE_CELL);
+      CURRENT_MATRIX[characterPosition.NEW_POSITION[X]].splice(characterPosition.NEW_POSITION[Y], 1, character);
     }
   }
 
-  const rabbitCanMove = (newPosition) => { // check is new position for rabbit is availible
+  const rabbitCanMove = (newPosition) => {
     const NEXT_POSITION = CURRENT_MATRIX[newPosition[X]][newPosition[Y]];
-    if(CHARACTERS.rabbitCell.canMove.includes(NEXT_POSITION)){
+    if(CHARACTERS[RABBIT_CELL].canMove.includes(NEXT_POSITION)){
       return true;
     }
   }
 
+  const getRabbitNewPosition = (currentPosition, direction) => {
+    const STEP_ON_X = multiply(currentPosition[X], MOVE_DIRECTION[direction][X]);
+    const STEP_ON_Y = multiply(currentPosition[Y], MOVE_DIRECTION[direction][Y]);
+    const NEW_X = multiply(PLAYFIELD_SIZE, STEP_ON_X) % PLAYFIELD_SIZE;
+    const NEW_Y = multiply(PLAYFIELD_SIZE, STEP_ON_Y) % PLAYFIELD_SIZE;
+    const POSITION = Array.of(NEW_X, NEW_Y);
+    return POSITION;
+  }
+
   const updateRabbitPosition = (event) => {
-    const DIRECTION = event.target.className; // getting rabbit move direction
-    const CURRENT_POSITION = getCharactersCurrentPosition(RABBIT_CELL)[X]; // getting current position of rabbit
-
-    const getRabbitNewPosition = (currentPosition, direction) => { // changing rabbit position with current direction
-      const STEP_ON_X = currentPosition[X] + MOVE_DIRECTION[direction][X];
-      const STEP_ON_Y = currentPosition[Y] + MOVE_DIRECTION[direction][Y];
-      const NEW_X = (PLAYFIELD_SIZE + STEP_ON_X) % PLAYFIELD_SIZE;
-      const NEW_Y = (PLAYFIELD_SIZE + STEP_ON_Y) % PLAYFIELD_SIZE;
-      const POSITION = Array.of(NEW_X, NEW_Y);
-      return POSITION;
-    }
-    
-    const newPosition = getRabbitNewPosition(CURRENT_POSITION, DIRECTION); 
-
-    if(rabbitCanMove(newPosition)){ // if new position is availible returning new position for character
+    const DIRECTION = event.target.className;
+    const CURRENT_POSITION = getCharactersCurrentPosition(RABBIT_CELL)[X];
+    getRabbitNewPosition(CURRENT_POSITION, DIRECTION);
+    const NEW_POSITION = getRabbitNewPosition(CURRENT_POSITION, DIRECTION); 
+    if(rabbitCanMove(NEW_POSITION)){
       return {
-        newPosition
+        CURRENT_POSITION,
+        NEW_POSITION
       }
     }
   }
 
-  const determineNearestPosition = ({DISTANCES, POSITIONS}) => POSITIONS[DISTANCES.indexOf(Math.min(...DISTANCES))]; // determine new position for wolf that is the nearest after rabbits move
+  const determineNearestPosition = ({DISTANCES, POSITIONS}) => POSITIONS[DISTANCES.indexOf(Math.min(...DISTANCES))];
 
-  const getClosestDistance = (position) => { // checking closest distance from maximum 4 distances that wolf can move
-    const newPosition = determineNearestPosition(position);
+  const getClosestDistance = (position, wolfPosition) => {
+    const CURRENT_POSITION = wolfPosition;
+    const NEW_POSITION = determineNearestPosition(position);
     return {
-      newPosition
+      CURRENT_POSITION,
+      NEW_POSITION
     }
   }
 
-  const calculateDistance = (newWolf, newRabbit) => Math.sqrt((newWolf[X] - newRabbit.newPosition[X])**2 + (newWolf[Y] - newRabbit.newPosition[Y])**2); // calculate distance with Pythagoras therome
+  const calculateDistance = (newWolf, newRabbit) => Math.sqrt((newWolf[X] - newRabbit.NEW_POSITION[X])**2 + (newWolf[Y] - newRabbit.NEW_POSITION[Y])**2);
 
-  const getWolfsNewPosition = (rabbitPosition) => { // getting new positions for every wolf
-    const DISTANCES = new Array(0); // array that include all distances from rabbit after rabbit move
+  const getWolfsNewPosition = (rabbitPosition, wolfPosition) => {
+    const DISTANCES = new Array(0);
     const POSITIONS = new Array(0);
-    DIRECTION_MOVEMENT.forEach(direction => { // checking all for directions for wolf for determinating nearest position to rabbit
-      const NEW_X = posX + direction[X];
-      const NEW_Y = posY + direction[Y];
-      const WOLF_NEW_POSITION = Array.of(NEW_X, NEW_Y); // array for all new positions that can be maximum 4
-      if(wolfCanMove(WOLF_NEW_POSITION)){ // wolf can move if probable positions is availible
+    DIRECTION_MOVEMENT.forEach(direction => {
+      const NEW_X = multiply(wolfPosition[X], direction[X]);
+      const NEW_Y = multiply(wolfPosition[Y], direction[Y]);
+      const WOLF_NEW_POSITION = Array.of(NEW_X, NEW_Y);
+      if(wolfCanMove(WOLF_NEW_POSITION)){
         const DISTANCE = calculateDistance(WOLF_NEW_POSITION, rabbitPosition); 
         DISTANCES.push(DISTANCE); 
         POSITIONS.push(WOLF_NEW_POSITION);
       }
     })
     return {
-      DISTANCES, // return all distances and positions pair in object and after determinating nearest position from rabbit new position
+      DISTANCES,
       POSITIONS
     }
   }
 
   const updateWolvesPositions = (rabbitPosition) => { 
-    getCharactersCurrentPosition(WOLF_CELL).forEach(currentPosition => { // checking every wolfes position and 
-      [posX, posY] = currentPosition;
-      if(rabbitPosition){ // if rabbit make move that means that it have new position
-        const WOLFS_NEW_POSITION = getWolfsNewPosition(rabbitPosition); 
-        const WOLF_NEAREST_POSITION = getClosestDistance(WOLFS_NEW_POSITION);
-        moveCharacter(WOLF_CELL, WOLF_NEAREST_POSITION);
+    getCharactersCurrentPosition(WOLF_CELL).forEach(currentPosition => {
+      if(rabbitPosition){
+        const WOLFS_NEW_POSITION = getWolfsNewPosition(rabbitPosition, currentPosition); 
+        const WOLF_NEAREST_POSITION = getClosestDistance(WOLFS_NEW_POSITION, currentPosition);
+        return moveCharacter(WOLF_CELL, WOLF_NEAREST_POSITION);
       }
     })
   }
   
-  const wolfCanMove = (newPosition) => { // checking is wolf can move
+  const wolfCanMove = (newPosition) => {
     if(newPosition[X] < 0 || newPosition[Y] < 0 || newPosition[X] > (PLAYFIELD_SIZE - 1) || newPosition[Y] > (PLAYFIELD_SIZE - 1)){
       return false;
     }
     const WOLF_NEXT_POSITION = CURRENT_MATRIX[newPosition[X]][newPosition[Y]];
-    if(CHARACTERS.wolfCell.canMove.includes(WOLF_NEXT_POSITION)){
+    if(CHARACTERS[WOLF_CELL].canMove.includes(WOLF_NEXT_POSITION)){
       return true;
     }
   }
 
   const isRabbitWin = () => { // 
-    const CURRENT_POSITION = getCharactersCurrentPosition(HOUSE_CELL);
-    if(!CURRENT_POSITION.length){
+    if(!CURRENT_MATRIX.some(el => el.includes(HOUSE_CELL))){
       return true;
     }
   }
 
   const isWolvesWin = () => {
-    const CURRENT_POSITION = getCharactersCurrentPosition(RABBIT_CELL);
-    if(!CURRENT_POSITION.length){  
+    if(!CURRENT_MATRIX.some(el => el.includes(RABBIT_CELL))){  
       return true;
     }
   }
 
-  const charactersMovement = (event) => { // making characters move 
-    const RABBIT_NEW_POSITION = updateRabbitPosition(event, CURRENT_MATRIX);
-    moveCharacter(RABBIT_CELL, RABBIT_NEW_POSITION);
-    if(isWolvesWin()){ 
-      document.getElementById(`playfield${CURRENT_ID}`).remove();
-      return CURRENT_BOARD.innerHTML = `<div id="wolvesWin"> Wolves Win !</div>`;
-    }
-    updateWolvesPositions(RABBIT_NEW_POSITION);
+  const checkGameStatus = () => {
     if(isWolvesWin()){ 
       document.getElementById(`playfield${CURRENT_ID}`).remove();
       return CURRENT_BOARD.innerHTML = `<div id="wolvesWin"> Wolves Win !</div>`;
@@ -268,7 +289,16 @@ const makeGame = (mainField) => {
       document.getElementById(`playfield${CURRENT_ID}`).remove();
       return CURRENT_BOARD.innerHTML = `<div id="rabbitWin"> Rabbit Win !</div>`;
     }
-    makePlayfield(CURRENT_ID); // make playfield after every characters move
+  }
+
+  const charactersMovement = (event) => {
+    const RABBIT_NEW_POSITION = updateRabbitPosition(event, CURRENT_MATRIX);
+    moveCharacter(RABBIT_CELL, RABBIT_NEW_POSITION);
+    checkGameStatus();
+    updateWolvesPositions(RABBIT_NEW_POSITION);
+    checkGameStatus();
+    const UPDATE_PLAYFIELD = makePlayfield(CURRENT_ID);
+    setPlayfieldStyles(UPDATE_PLAYFIELD, PLAYFIELD_SIZE);
   }
 
   document.getElementById(`move-right-${CURRENT_ID}`).addEventListener('click', charactersMovement);
