@@ -65,7 +65,7 @@ const drawMatrix = (matrix, obj, playfield) => {
   matrix.forEach((arr) => { 
     arr.forEach((arrayItem) => {
       const CELL = document.createElement('div');
-      CELL.setAttribute('class', 'FREE_CELLCell');
+      CELL.setAttribute('class', 'cell');
       const ITEM = document.createElement('img');
         if(arrayItem !== FREE_CELL){
           ITEM.src = obj[arrayItem].url;
