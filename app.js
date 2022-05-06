@@ -265,12 +265,6 @@ const makeGame = (mainField) => {
     }
   }
 
-  const determineAdjacentPosition = (position, direction) => {
-    const STEP_ON_X = multiply(position[X], direction[X]);
-    const STEP_ON_Y = multiply(position[Y], direction[Y]);
-    return Array.of(STEP_ON_X, STEP_ON_Y);
-  }
-
   const getDistancesAndPositions = (wolfPosition, rabbitPosition) => {
     const DISTANCES = new Array(0);
     const POSITIONS = new Array(0);
@@ -360,5 +354,4 @@ const newGame = () => {
   RELOAD_BTN.addEventListener('click', () => {
     location.reload();
   })
-
 }
