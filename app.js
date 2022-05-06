@@ -188,9 +188,6 @@ const makeGame = (mainField) => {
   const CURRENT_BUTTONS_DIV = makeButtonsDiv(CURRENT_ID);
   const CURRENT_PLAYFIELD = makePlayfield(CURRENT_ID);
 
-  // const CURRENT_PLAYFIELD = compose(makePlayfield, makeButtonsDiv, makeBoard, CURRENT_ID);
-  // console.log(CURRENT_PLAYFIELD);
-
   setBoardStyles(CURRENT_BOARD, PLAYFIELD_SIZE);
   setButtonsDivStyles(CURRENT_BUTTONS_DIV, PLAYFIELD_SIZE);
   setPlayfieldStyles(CURRENT_PLAYFIELD, PLAYFIELD_SIZE);
