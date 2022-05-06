@@ -27,7 +27,7 @@ const createInitialMatrix = (size) => {
 
 const generateCurrentId = () => Math.floor(Math.random() * 100000);
 
-const setAttributes = (div, className, id) => { 
+const setAttributes = (div, className, id) => {
   div.setAttribute('class', className);
   div.setAttribute('id', id);
   return div;
@@ -97,6 +97,13 @@ const calculateDistance = (wolfNewPosition, rabbitNewPosition) => {
   return Math.sqrt((wolfNewPosition[X] - rabbitNewPosition.NEW_POSITION[X])**2 + (wolfNewPosition[Y] - rabbitNewPosition.NEW_POSITION[Y])**2);
 }
 
+const moveCharacter = (matrix, character, positions) => {
+  matrix[(Object.values(positions)[X])[X]].splice((Object.values(positions)[X])[Y], 1, FREE_CELL);
+  matrix[(Object.values(positions)[Y])[X]].splice((Object.values(positions)[Y])[Y], 1, character);
+}
+
+const determineNearestPosition = ({DISTANCES, POSITIONS}) => POSITIONS[DISTANCES.indexOf(Math.min(...DISTANCES))];
+
 const makeGame = (mainField) => {
 
   const getPlayfieldSize = () => parseInt(document.getElementById('select-size').value);
@@ -153,18 +160,18 @@ const makeGame = (mainField) => {
    
   const CURRENT_ID = generateCurrentId();
   
-  const makeBoard = (id, mainField) => {
+  const makeBoard = (mainField, id) => {
     const BOARD = document.createElement('div');
     setAttributes(BOARD, 'board', `board${id}`);
     mainField.appendChild(BOARD);
     return BOARD;
   }
 
-  const makeButtonsDiv = (currentBoard, id) => {
+  const makeButtonsDiv = (id) => {
     const MOVEMENT_BUTTONS = document.createElement('div'); 
     setAttributes(MOVEMENT_BUTTONS, 'side-buttons', `side-buttons${id}`);
     makeButtonsDivElements(MOVEMENT_BUTTONS, CURRENT_ID);
-    currentBoard.appendChild(MOVEMENT_BUTTONS);
+    CURRENT_BOARD.appendChild(MOVEMENT_BUTTONS);
     return MOVEMENT_BUTTONS; 
   }
 
@@ -177,9 +184,12 @@ const makeGame = (mainField) => {
     return PLAYFIELD;
   }
 
-  const CURRENT_BOARD = makeBoard(CURRENT_ID, mainField);
-  const CURRENT_BUTTONS_DIV = makeButtonsDiv(CURRENT_BOARD, CURRENT_ID);
+  const CURRENT_BOARD = makeBoard(mainField, CURRENT_ID);
+  const CURRENT_BUTTONS_DIV = makeButtonsDiv(CURRENT_ID);
   const CURRENT_PLAYFIELD = makePlayfield(CURRENT_ID);
+
+  // const CURRENT_PLAYFIELD = compose(makePlayfield, makeButtonsDiv, makeBoard, CURRENT_ID);
+  // console.log(CURRENT_PLAYFIELD);
 
   setBoardStyles(CURRENT_BOARD, PLAYFIELD_SIZE);
   setButtonsDivStyles(CURRENT_BUTTONS_DIV, PLAYFIELD_SIZE);
@@ -227,14 +237,11 @@ const makeGame = (mainField) => {
 
   const updateRabbitPosition = (event) => {
     const RABBIT_NEW_POSITION = getRabbitNewPosition(event);
-    if(RABBIT_NEW_POSITION){                                   
-      CURRENT_MATRIX[RABBIT_NEW_POSITION.CURRENT_POSITION[X]].splice(RABBIT_NEW_POSITION.CURRENT_POSITION[Y], 1, FREE_CELL);
-      CURRENT_MATRIX[RABBIT_NEW_POSITION.NEW_POSITION[X]].splice(RABBIT_NEW_POSITION.NEW_POSITION[Y], 1, RABBIT);
+    if(RABBIT_NEW_POSITION){
+      moveCharacter(CURRENT_MATRIX, RABBIT, RABBIT_NEW_POSITION);                               
     }
     return RABBIT_NEW_POSITION;
   }
-  
-  const determineNearestPosition = ({DISTANCES, POSITIONS}) => POSITIONS[DISTANCES.indexOf(Math.min(...DISTANCES))];
   
   const isWolfCanMove = (newPosition) => {
     if(newPosition[X] < 0 || newPosition[Y] < 0 || newPosition[X] > (PLAYFIELD_SIZE - 1) || newPosition[Y] > (PLAYFIELD_SIZE - 1)){
@@ -275,9 +282,8 @@ const makeGame = (mainField) => {
 
   const updateWolvesPosition = (position, rabbitNewPosition) => {
     const WOLF_POSITIONS = getPositions(position, rabbitNewPosition);
-    if(rabbitNewPosition){
-      CURRENT_MATRIX[WOLF_POSITIONS.WOLF_CURRENT_POSITION[X]].splice(WOLF_POSITIONS.WOLF_CURRENT_POSITION[Y], 1, FREE_CELL);
-      CURRENT_MATRIX[WOLF_POSITIONS.WOLF_NEW_POSITION[X]].splice(WOLF_POSITIONS.WOLF_NEW_POSITION[Y], 1, WOLF);
+    if(rabbitNewPosition && getCharactersCurrentPosition(HOUSE)[X]){
+      moveCharacter(CURRENT_MATRIX, WOLF, WOLF_POSITIONS); 
     }
   }
 
@@ -287,10 +293,11 @@ const makeGame = (mainField) => {
 
   const determineWinnerCharacter = () => {
     if(!getCharactersCurrentPosition(RABBIT)[X]){
-      CURRENT_BOARD.innerHTML = `<h1 class='wolvesWin'> WOLVES WIN ! <h1>`;
-    }
-    if(!getCharactersCurrentPosition(HOUSE)[X]){
-      CURRENT_BOARD.innerHTML = `<h1 class='rabbitWin'> RABBIT WIN ! <h1>`;
+      removeDocumentsElement(CURRENT_ID);
+      return CURRENT_BOARD.innerHTML = `<h1 class='wolvesWin'> WOLVES WIN ! <h1>`;
+    }else if(!getCharactersCurrentPosition(HOUSE)[X]){
+      removeDocumentsElement(CURRENT_ID);
+      return CURRENT_BOARD.innerHTML = `<h1 class='rabbitWin'> RABBIT WIN ! <h1>`;
     }
   }
 
@@ -298,9 +305,10 @@ const makeGame = (mainField) => {
     const WOLF_CURRENT_POSITION = getCharactersCurrentPosition(WOLF);
     const RABBIT_POSITION = updateRabbitPosition(event);
     updateWolvesPositions(RABBIT_POSITION, WOLF_CURRENT_POSITION);
-    determineWinnerCharacter();
-    const CURRENT_PLAYFIELD = makePlayfield(CURRENT_ID);
+    if(!determineWinnerCharacter()){
+      const CURRENT_PLAYFIELD = makePlayfield(CURRENT_ID);
     setPlayfieldStyles(CURRENT_PLAYFIELD, PLAYFIELD_SIZE);
+    }
   }
 
   document.getElementById(`move-right-${CURRENT_ID}`).addEventListener('click', makeCharactersMovement);
@@ -335,5 +343,4 @@ const newGame = () => {
     location.reload();
   })
 
-  const START_GAME = makeGame(BOARD_FIELD);
 }
