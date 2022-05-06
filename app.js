@@ -247,12 +247,15 @@ const makeGame = (mainField) => {
     return RABBIT_NEW_POSITION;
   }
 
+  const getPlayfieldRange = () => {
+    return [...Array(PLAYFIELD_SIZE).keys()];
+  }
+
   const isInRange = (position) => {
-    position.forEach(coordinate => {
-      if(position[X] >= 0 && position[X] <PLAYFIELD_SIZE){
-        return true;
-      }
-    })
+    const RANGE = getPlayfieldRange();
+    if(RANGE.includes(position[X]) && RANGE.includes(position[Y])){
+      return true;
+    }
   }
   
   const isWolfCanMove = (position) => {
@@ -273,7 +276,7 @@ const makeGame = (mainField) => {
     const POSITIONS = new Array(0);
     DIRECTION_MOVEMENT.forEach(direction => {
       const POSITION = determineAdjacentPosition(wolfPosition, direction);
-      if(isWolfCanMove(POSITION) && rabbitPosition){
+      if(isInRange(POSITION) && isWolfCanMove(POSITION) && rabbitPosition){
         const DISTANCE = calculateDistance(POSITION, rabbitPosition);
         DISTANCES.push(DISTANCE);
         POSITIONS.push(POSITION);
