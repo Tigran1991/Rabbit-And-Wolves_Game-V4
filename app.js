@@ -210,9 +210,13 @@ const makeGame = (mainField) => {
     return CHARACTER_POSITION;
   }
 
+  const determineNextPositionCharacter = (position) => {
+    return CURRENT_MATRIX[position[X]][position[Y]];
+  }
+
   const isRabbitCanMove = (position) => {
-    const NEXT_POSITION = CURRENT_MATRIX[position[X]][position[Y]];
-    if(CHARACTERS[RABBIT].canMove.includes(NEXT_POSITION)){
+    const NEXT_POSITION_CHARACTER = determineNextPositionCharacter(position);
+    if(CHARACTERS[RABBIT].canMove.includes(NEXT_POSITION_CHARACTER)){
       return true;
     }
   }
@@ -227,7 +231,7 @@ const makeGame = (mainField) => {
     const DIRECTION = event.target.className;
     const CURRENT_POSITION = getCharactersCurrentPosition(RABBIT)[X];
     const NEW_POSITION = calculateRabbitNewPosition(CURRENT_POSITION, DIRECTION);
-    if(isRabbitCanMove(NEW_POSITION)){
+    if(isRabbitCanMove(NEW_POSITION) && isInRange(NEW_POSITION)){
       return {
         CURRENT_POSITION,
         NEW_POSITION
@@ -242,15 +246,26 @@ const makeGame = (mainField) => {
     }
     return RABBIT_NEW_POSITION;
   }
+
+  const isInRange = (position) => {
+    position.forEach(coordinate => {
+      if(position[X] >= 0 && position[X] <PLAYFIELD_SIZE){
+        return true;
+      }
+    })
+  }
   
-  const isWolfCanMove = (newPosition) => {
-    if(newPosition[X] < 0 || newPosition[Y] < 0 || newPosition[X] > (PLAYFIELD_SIZE - 1) || newPosition[Y] > (PLAYFIELD_SIZE - 1)){
-      return false;
-    }
-    const WOLF_NEXT_POSITION = CURRENT_MATRIX[newPosition[X]][newPosition[Y]];
-    if(CHARACTERS[WOLF].canMove.includes(WOLF_NEXT_POSITION)){
+  const isWolfCanMove = (position) => {
+    const NEXT_POSITION_CHARACTER = determineNextPositionCharacter(position);
+    if(CHARACTERS[WOLF].canMove.includes(NEXT_POSITION_CHARACTER)){
       return true;
     }
+  }
+
+  const determineAdjacentPosition = (position, direction) => {
+    const STEP_ON_X = multiply(position[X], direction[X]);
+    const STEP_ON_Y = multiply(position[Y], direction[Y]);
+    return Array.of(STEP_ON_X, STEP_ON_Y);
   }
 
   const getDistancesAndPositions = (wolfPosition, rabbitPosition) => {
