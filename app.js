@@ -14,7 +14,6 @@ const MOVE_DIRECTION = {
 }
  
 const CELL_WIDTH = 60;
-
 const DIRECTION_MOVEMENT = Object.values(MOVE_DIRECTION);
 const DIRECTION_SIDES = Object.keys(MOVE_DIRECTION);
 
