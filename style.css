@@ -119,15 +119,6 @@
     margin-right: 20px; */
 }
 
-.side-buttons{
-    display: flex;
-    position: absolute;
-    width: 96px;
-    height: 60px;
-    background-color: rgb(70, 122, 219);
-    border-radius: 10px;
-}
-
 .rabbitWin{
     display: block;
     flex-direction: column;
@@ -138,8 +129,9 @@
     color: green;
     background-color: rgb(138, 182, 138);
     z-index: 2;
-    margin-top: 20%;
+    margin-top: 30%;
     padding: 60px;
+    border-radius: 3px;
 }
 
 .wolvesWin{
@@ -152,9 +144,9 @@
     color: rgb(91, 109, 91);
     background-color: #333;
     z-index: 2;
-    margin-top: 50%;
-    margin-top: 25%;
+    margin-top: 30%;
     padding: 60px;
+    border-radius: 3px;
 }
 
 .cell{
@@ -173,57 +165,46 @@ img{
 
 .move-top{
     position: absolute;
-    left: 30px;
-    top: 0px;
-    width: 30px;
-    height: 30px;
-    background-color: rgb(50, 103, 146);
+    width: 22px;
+    height: 22px;
     border: none;
-    margin-left: 3px;
-    bottom: 0px;
     cursor: pointer;
     background: url(./img/arrows/arrow-up.png);
     background-size: contain;
+    bottom: 7%;
 }
 
 .move-left{
     position: absolute;
-    left: 0px;
-    top: 33px;
-    width: 30px;
-    height: 30px;
-    background-color: rgb(50, 103, 146);
+    width: 22px;
+    height: 22px;
     border: none;
     cursor: pointer;
     background: url(./img/arrows/arrow-left.png);
     background-size: contain;
+    bottom: 2%;
+    left: 42%;
 }
 
 .move-bottom{
     position: absolute;
-    left: 30px;
-    top: 33px;
-    width: 30px;
-    height: 30px;
-    background-color: rgb(50, 103, 146);
+    width: 22px;
+    height: 22px;
     border: none;
-    margin-left: 3px;
-    margin-right: 3px;
     cursor: pointer;
     background: url(./img/arrows/arrow-down.png);
     background-size: contain;
+    bottom: 0.9%;
 }
 
 .move-right{
     position: absolute;
-    left: 63px;
-    top: 33px;
-    bottom: 0px;
-    width: 30px;
-    height: 30px;
-    background-color: rgb(50, 103, 146);
+    width: 22px;
+    height: 22px;
     border: none;
     cursor: pointer;
     background: url(./img/arrows/arrow-right.png);
     background-size: contain;
+    bottom: 2%;
+    right: 42%;
 }
