@@ -23,11 +23,13 @@ const makeGame = (mainField) => {
 
   const CHARACTERS = {
     [RABBIT]: {
+      name: 'RABBIT',
       characterCount : 1,
       canMove: [FREE_CELL, WOLF, HOUSE],
       url: './img/bunny.png'
     },
     [WOLF]: {
+      name: 'WOLF',
       characterCount : (PLAYFIELD_SIZE * 40) / 100,
       canMove: [FREE_CELL, RABBIT],
       url: './img/wolf.png',
@@ -137,7 +139,6 @@ const makeGame = (mainField) => {
 
   const createPlayfield = REUSABLE.compose(makePlayfield, makeBoard);
   createPlayfield(mainField);
-
   const CURRENT_BOARD = document.getElementById(`board-${CURRENT_ID}`);
 
   const getCharactersCurrentPosition = (character) => {
@@ -153,6 +154,13 @@ const makeGame = (mainField) => {
       }
     })
     return CHARACTER_POSITION;
+  }
+
+  const moveCharacter = (character, positions) => {
+    const [CURRENT_X, CURRENT_Y] = positions.CURRENT_POSITION;
+    const [POSITION_X, POSITION_Y] = positions.NEW_POSITION;
+    CURRENT_MATRIX[CURRENT_X].splice(CURRENT_Y, 1, FREE_CELL);
+    CURRENT_MATRIX[POSITION_X].splice(POSITION_Y, 1, character);
   }
 
   const determineNextPositionCharacter = (position) => {
@@ -178,7 +186,7 @@ const makeGame = (mainField) => {
     return NEW_POSITION;
   }
 
-  const getRabbitNewPosition = (event) => {
+  const getRabbitPositions = (event) => {
     const DIRECTION = event.target.className;
     const CURRENT_POSITION = getCharactersCurrentPosition(RABBIT)[X];
     const NEW_POSITION = calculateRabbitNewPosition(CURRENT_POSITION, DIRECTION);
@@ -190,11 +198,16 @@ const makeGame = (mainField) => {
     }
   }
 
-  const updateRabbitPosition = (event) => {
-    const RABBIT_NEW_POSITION = getRabbitNewPosition(event);
-    if(RABBIT_NEW_POSITION){
-      REUSABLE.moveCharacter(CURRENT_MATRIX, RABBIT, RABBIT_NEW_POSITION);                               
+  const updateRabbitPosition = (position) => {
+    if(position){
+      moveCharacter(RABBIT, position);                               
     }
+  }
+
+  const getRabbitNewPosition = (event) => {
+    const RABBIT_POSITIONS = getRabbitPositions(event);
+    const RABBIT_NEW_POSITION = RABBIT_POSITIONS.NEW_POSITION;
+    updateRabbitPosition(RABBIT_POSITIONS);
     return RABBIT_NEW_POSITION;
   }
 
@@ -248,7 +261,7 @@ const makeGame = (mainField) => {
     if(!WOLF_POSITIONS.NEW_POSITION){
       WOLF_POSITIONS.NEW_POSITION = WOLF_POSITIONS.CURRENT_POSITION;
     }else if(rabbitNewPosition && getCharactersCurrentPosition(HOUSE)[X]){
-      REUSABLE.moveCharacter(CURRENT_MATRIX, WOLF, WOLF_POSITIONS);
+      moveCharacter(WOLF, WOLF_POSITIONS);
     }
   }
 
@@ -258,21 +271,30 @@ const makeGame = (mainField) => {
 
   const determineWinnerCharacter = () => {
     if(!getCharactersCurrentPosition(RABBIT)[X]){
-      removeDocumentsElement();
-      return CURRENT_BOARD.innerHTML = `<h1 class='wolvesWin'> WOLVES WIN ! <h1>`;
+      return CHARACTERS[WOLF].name;
     }else if(!getCharactersCurrentPosition(HOUSE)[X]){
-      removeDocumentsElement();
-      return CURRENT_BOARD.innerHTML = `<h1 class='rabbitWin'> RABBIT WIN ! <h1>`;
+      return CHARACTERS[RABBIT].name;
+    }
+  }
+  
+  const displayWinnerCharacter = () => {
+    const winnerCharacter = determineWinnerCharacter();
+    CURRENT_BOARD.innerHTML = `<h1 class='winner'> ${winnerCharacter} WIN ! <h1>`;
+  }
+  
+  const decideGameCourse = () => {
+    if(!determineWinnerCharacter()){
+      makePlayfield(CURRENT_BOARD);
+    }else{
+      displayWinnerCharacter();
     }
   }
 
   const makeCharactersMovement = (event) => {
     const WOLF_CURRENT_POSITION = getCharactersCurrentPosition(WOLF);
-    const RABBIT_POSITION = updateRabbitPosition(event);
+    const RABBIT_POSITION = getRabbitNewPosition(event);
     updateWolvesPositions(RABBIT_POSITION, WOLF_CURRENT_POSITION);
-    if(!determineWinnerCharacter()){
-      makePlayfield(CURRENT_BOARD);
-    }
+    decideGameCourse();
   }
 
   const addingEventListener = () => {
@@ -286,7 +308,6 @@ const makeGame = (mainField) => {
 
 const newGame = () => {
   const  CONTAINER = document.getElementById('container');
-
   REUSABLE.showNewGamePage(CONTAINER);
 
   const NEW_BOARD_BUTTON = document.querySelector('.new-board-btn');
