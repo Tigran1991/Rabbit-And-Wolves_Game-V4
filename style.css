@@ -171,7 +171,7 @@ img{
     cursor: pointer;
     background: url(./img/arrows/arrow-up.png);
     background-size: contain;
-    bottom: 7%;
+    bottom: 6%;
 }
 
 .move-left{
@@ -183,7 +183,7 @@ img{
     background: url(./img/arrows/arrow-left.png);
     background-size: contain;
     bottom: 2%;
-    left: 42%;
+    left: 43%;
 }
 
 .move-bottom{
@@ -194,7 +194,7 @@ img{
     cursor: pointer;
     background: url(./img/arrows/arrow-down.png);
     background-size: contain;
-    bottom: 0.9%;
+    bottom: 0.3%;
 }
 
 .move-right{
@@ -206,5 +206,5 @@ img{
     background: url(./img/arrows/arrow-right.png);
     background-size: contain;
     bottom: 2%;
-    right: 42%;
+    right: 43%;
 }
