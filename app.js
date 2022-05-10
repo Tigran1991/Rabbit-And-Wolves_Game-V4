@@ -257,11 +257,11 @@ const makeGame = (mainField) => {
     }
   }
 
-  const updateWolfPosition = (rabbitposition) => (position) =>{
-    const WOLF_POSITIONS = getPositions(position, rabbitposition);
+  const updateWolfPosition = (rabbitPosition) => (position) =>{
+    const WOLF_POSITIONS = getPositions(position, rabbitPosition);
     if(!WOLF_POSITIONS.newPosition){
       WOLF_POSITIONS.newPosition = WOLF_POSITIONS.currentPosition;
-    }else if(rabbitposition && getCharactersCurrentPosition(HOUSE)[X]){
+    }else if(rabbitPosition && getCharactersCurrentPosition(HOUSE)[X]){
       moveCharacter(WOLF, WOLF_POSITIONS);
     }
   }
