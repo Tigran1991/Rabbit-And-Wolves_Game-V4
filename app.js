@@ -280,8 +280,8 @@ const makeGame = (mainField) => {
   }
   
   const displayWinnerCharacter = () => {
-    const winnerCharacter = determineWinnerCharacter();
-    CURRENT_BOARD.innerHTML = `<h1 class='winner'> ${winnerCharacter} WIN ! <h1>`;
+    const WINNER_CHARACTER = determineWinnerCharacter();
+    CURRENT_BOARD.innerHTML = `<h1 class='winner'> ${WINNER_CHARACTER} WIN ! <h1>`;
   }
   
   const decideGameCourse = () => {
