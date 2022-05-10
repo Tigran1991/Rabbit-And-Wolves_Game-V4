@@ -157,8 +157,8 @@ const makeGame = (mainField) => {
   }
 
   const moveCharacter = (character, positions) => {
-    const [CURRENT_X, CURRENT_Y] = positions.CURRENT_POSITION;
-    const [POSITION_X, POSITION_Y] = positions.NEW_POSITION;
+    const [CURRENT_X, CURRENT_Y] = positions.currentPosition;
+    const [POSITION_X, POSITION_Y] = positions.newPosition;
     CURRENT_MATRIX[CURRENT_X].splice(CURRENT_Y, 1, FREE_CELL);
     CURRENT_MATRIX[POSITION_X].splice(POSITION_Y, 1, character);
   }
@@ -182,17 +182,18 @@ const makeGame = (mainField) => {
 
   const calculateRabbitNewPosition = (position, direction) => {
     const STEP = REUSABLE.determineAdjacentPosition(position, MOVE_DIRECTION[direction]);
-    return getNewPosition(STEP);
+    const NEW_POSITION = getNewPosition(STEP);
+    return NEW_POSITION;
   }
 
   const getRabbitPositions = (event) => {
     const DIRECTION = event.target.className;
-    const CURRENT_POSITION = getCharactersCurrentPosition(RABBIT)[X];
-    const NEW_POSITION = calculateRabbitNewPosition(CURRENT_POSITION, DIRECTION);
-    if(isRabbitCanMove(NEW_POSITION) && isInRange(NEW_POSITION)){
+    let currentPosition = getCharactersCurrentPosition(RABBIT)[X];
+    let newPosition = calculateRabbitNewPosition(currentPosition, DIRECTION);
+    if(isRabbitCanMove(newPosition) && isInRange(newPosition)){
       return {
-        CURRENT_POSITION,
-        NEW_POSITION
+        currentPosition,
+        newPosition
       }
     }
   }
@@ -205,9 +206,11 @@ const makeGame = (mainField) => {
 
   const getRabbitNewPosition = (event) => {
     const RABBIT_POSITIONS = getRabbitPositions(event);
-    const RABBIT_NEW_POSITION = RABBIT_POSITIONS.NEW_POSITION;
-    updateRabbitPosition(RABBIT_POSITIONS);
-    return RABBIT_NEW_POSITION;
+    if(RABBIT_POSITIONS){
+      updateRabbitPosition(RABBIT_POSITIONS);
+      const RABBIT_NEW_POSITION = RABBIT_POSITIONS.newPosition;
+      return RABBIT_NEW_POSITION;
+    } 
   }
 
   const getPlayfieldRange = () => {
@@ -246,19 +249,19 @@ const makeGame = (mainField) => {
   }
 
   const getPositions = (wolfPosition, rabbitPosition) => {
-    const CURRENT_POSITION = wolfPosition;
+    let currentPosition = wolfPosition;
     const DISTANCES_AND_POSITIONS = getDistancesAndPositions(wolfPosition, rabbitPosition);
-    const NEW_POSITION = REUSABLE.determineNearestPosition(DISTANCES_AND_POSITIONS);
+    let newPosition = REUSABLE.determineNearestPosition(DISTANCES_AND_POSITIONS);
     return {
-      CURRENT_POSITION,
-      NEW_POSITION
+      currentPosition,
+      newPosition
     }
   }
 
   const updateWolfPosition = (rabbitNewPosition) => (position) =>{
     const WOLF_POSITIONS = getPositions(position, rabbitNewPosition);
-    if(!WOLF_POSITIONS.NEW_POSITION){
-      WOLF_POSITIONS.NEW_POSITION = WOLF_POSITIONS.CURRENT_POSITION;
+    if(!WOLF_POSITIONS.newPosition){
+      WOLF_POSITIONS.newPosition = WOLF_POSITIONS.currentPosition;
     }else if(rabbitNewPosition && getCharactersCurrentPosition(HOUSE)[X]){
       moveCharacter(WOLF, WOLF_POSITIONS);
     }

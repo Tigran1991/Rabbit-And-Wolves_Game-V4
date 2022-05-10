@@ -28,9 +28,9 @@ const REUSABLE = {
   add : (summableA, sumableB) => summableA + sumableB,
       
   determineAdjacentPosition : (position, direction) => {
-      let stepOnX = REUSABLE.add(position[X], direction[X]);
-      let stepOnY = REUSABLE.add(position[Y], direction[Y]);
-      return Array.of(stepOnX, stepOnY);
+      const STEP_ON_X = REUSABLE.add(position[X], direction[X]);
+      const STEP_ON_Y = REUSABLE.add(position[Y], direction[Y]);
+      return Array.of(STEP_ON_X, STEP_ON_Y);
   },
       
   calculateDistance : (wolfNewPosition, rabbitNewPosition) => {
