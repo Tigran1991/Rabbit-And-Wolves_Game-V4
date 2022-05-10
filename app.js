@@ -146,8 +146,8 @@ const makeGame = (mainField) => {
     CURRENT_MATRIX.forEach(elem => {
       if(elem.includes(character)){
         elem.filter((item, index) => {
-          const elemIndex = CURRENT_MATRIX.indexOf(elem);
           if(item == character){
+            const elemIndex = CURRENT_MATRIX.indexOf(elem);
             CHARACTER_POSITION.push(Array.of(elemIndex, index));
           }
         })
@@ -182,8 +182,7 @@ const makeGame = (mainField) => {
 
   const calculateRabbitNewPosition = (position, direction) => {
     const STEP = REUSABLE.determineAdjacentPosition(position, MOVE_DIRECTION[direction]);
-    const NEW_POSITION = getNewPosition(STEP);
-    return NEW_POSITION;
+    return getNewPosition(STEP);
   }
 
   const getRabbitPositions = (event) => {
@@ -256,7 +255,7 @@ const makeGame = (mainField) => {
     }
   }
 
-  const updateWolfPosition = (position, rabbitNewPosition) => {
+  const updateWolfPosition = (rabbitNewPosition) => (position) =>{
     const WOLF_POSITIONS = getPositions(position, rabbitNewPosition);
     if(!WOLF_POSITIONS.NEW_POSITION){
       WOLF_POSITIONS.NEW_POSITION = WOLF_POSITIONS.CURRENT_POSITION;
@@ -266,7 +265,7 @@ const makeGame = (mainField) => {
   }
 
   const updateWolvesPositions = (rabbitNewPosition, wolvesCurrentPosition) => {
-    wolvesCurrentPosition.map(position => updateWolfPosition(position, rabbitNewPosition));
+    wolvesCurrentPosition.map(updateWolfPosition(rabbitNewPosition));
   }
 
   const determineWinnerCharacter = () => {
