@@ -33,7 +33,6 @@ const makeGame = (mainField) => {
       characterCount : (PLAYFIELD_SIZE * 40) / 100,
       canMove: [FREE_CELL, RABBIT],
       url: './img/wolf.png',
-
     },
     [HOUSE]: {
       characterCount : 1,
@@ -258,11 +257,11 @@ const makeGame = (mainField) => {
     }
   }
 
-  const updateWolfPosition = (rabbitNewPosition) => (position) =>{
-    const WOLF_POSITIONS = getPositions(position, rabbitNewPosition);
+  const updateWolfPosition = (rabbitposition) => (position) =>{
+    const WOLF_POSITIONS = getPositions(position, rabbitposition);
     if(!WOLF_POSITIONS.newPosition){
       WOLF_POSITIONS.newPosition = WOLF_POSITIONS.currentPosition;
-    }else if(rabbitNewPosition && getCharactersCurrentPosition(HOUSE)[X]){
+    }else if(rabbitposition && getCharactersCurrentPosition(HOUSE)[X]){
       moveCharacter(WOLF, WOLF_POSITIONS);
     }
   }
