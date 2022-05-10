@@ -267,8 +267,8 @@ const makeGame = (mainField) => {
     }
   }
 
-  const updateWolvesPositions = (rabbitNewPosition, wolvesCurrentPosition) => {
-    wolvesCurrentPosition.map(updateWolfPosition(rabbitNewPosition));
+  const updateWolvesPositions = (charactersPositions) => {
+    charactersPositions.wolfCurrentPosition.map(updateWolfPosition(charactersPositions.rabbitNewPosition));
   }
 
   const determineWinnerCharacter = () => {
@@ -292,12 +292,22 @@ const makeGame = (mainField) => {
     }
   }
 
-  const makeCharactersMovement = (event) => {
-    const WOLF_CURRENT_POSITION = getCharactersCurrentPosition(WOLF);
-    const RABBIT_POSITION = getRabbitNewPosition(event);
-    updateWolvesPositions(RABBIT_POSITION, WOLF_CURRENT_POSITION);
-    decideGameCourse();
+  const getWolvesCurrentAndRabbitNewPositions = (event) => {
+    let wolfCurrentPosition = getCharactersCurrentPosition(WOLF);
+    let rabbitNewPosition = getRabbitNewPosition(event);
+    return {
+      wolfCurrentPosition,
+      rabbitNewPosition
+    }
   }
+
+  // const makeCharactersMovement = (event) => {
+  //   getWolvesCurrentAndRabbitNewPositions(event);
+  //   updateWolvesPositions(RABBIT_POSITION, WOLF_CURRENT_POSITION);
+  //   decideGameCourse();
+  // }
+
+  const makeCharactersMovement = REUSABLE.compose(decideGameCourse, updateWolvesPositions, getWolvesCurrentAndRabbitNewPositions);
 
   const addingEventListener = () => {
     DIRECTION_SIDES.map(direction => {
